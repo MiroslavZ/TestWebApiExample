@@ -15,26 +15,17 @@ var builder = WebApplication.CreateBuilder(args);
 LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(),
 "/nlog.config"));
 
-//added CORS and IIS configuration
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
-
 builder.Services.ConfigureLoggerService();
-
 builder.Services.ConfigureRepositoryManager();
-
 builder.Services.ConfigureServiceManager();
-
 builder.Services.ConfigureSqlContext(builder.Configuration);
 
-// controllers are in CompanyEmployees.Presentation
-builder.Services.AddControllers()
-    .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
+//builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program));
 
 // enable custom responses from the actions
@@ -95,7 +86,7 @@ app.MapControllers(); //adds endpoints //the routes are configured here (without
 app.Run();
 
 NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter() =>
-new ServiceCollection().AddLogging().AddMvc().AddNewtonsoftJson()
-.Services.BuildServiceProvider()
-.GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters
-.OfType<NewtonsoftJsonPatchInputFormatter>().First();
+    new ServiceCollection().AddLogging().AddMvc().AddNewtonsoftJson()
+    .Services.BuildServiceProvider()
+    .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters
+    .OfType<NewtonsoftJsonPatchInputFormatter>().First();

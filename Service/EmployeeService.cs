@@ -68,8 +68,7 @@ internal sealed class EmployeeService : IEmployeeService
 	}
 
 	public async Task UpdateEmployeeForCompanyAsync(Guid companyId, Guid id,
-		EmployeeForUpdateDto employeeForUpdate,
-		bool compTrackChanges, bool empTrackChanges)
+		EmployeeForUpdateDto employeeForUpdate, bool compTrackChanges, bool empTrackChanges)
 	{
 		await CheckIfCompanyExists(companyId, compTrackChanges);
 

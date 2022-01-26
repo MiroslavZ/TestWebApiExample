@@ -85,7 +85,6 @@ namespace Service
             await _repository.SaveAsync();
         }
 
-
         private async Task<Company> GetCompanyAndCheckIfItExists(Guid id, bool trackChanges)
         {
             var company = await _repository.Company.GetCompanyAsync(id, trackChanges);
