@@ -16,8 +16,8 @@ namespace CompanyEmployees.Presentation.ActionFilters
             .SingleOrDefault(x => x.Value.ToString().Contains("Dto")).Value;
             if (param is null)
             {
-                context.Result = new BadRequestObjectResult($"Object is null. Controller: { controller }, action: { action} ");
-            return;
+                context.Result = new BadRequestObjectResult($"Object is null. Controller: { controller }, action: {action} ");
+                return;
             }
             if (!context.ModelState.IsValid)
                 context.Result = new UnprocessableEntityObjectResult(context.ModelState);

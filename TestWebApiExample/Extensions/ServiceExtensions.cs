@@ -18,7 +18,8 @@ namespace TestWebApiExample.Extensions
             options.AddPolicy("CorsPolicy", builder =>
             builder.AllowAnyOrigin()
             .AllowAnyMethod() //allows all HTTP methods
-            .AllowAnyHeader());
+            .AllowAnyHeader()
+            .WithExposedHeaders("X-Pagination"));
         });
 
         public static void ConfigureIISIntegration(this IServiceCollection services) =>
