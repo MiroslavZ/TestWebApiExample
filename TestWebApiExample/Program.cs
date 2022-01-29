@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using CompanyEmployees.Presentation.ActionFilters;
+using Shared.DataTransferObjects;
+using Service.DataShaping;
+using CompanyEmployees.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,6 +54,14 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 // adding our validation filter for post and put requests
 builder.Services.AddScoped<ValidationFilterAttribute>();
+
+builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
+
+builder.Services.AddCustomMediaTypes();
+
+builder.Services.AddScoped<ValidateMediaTypeAttribute>();
+
+builder.Services.AddScoped<IEmployeeLinks, EmployeeLinks>();
 
 var app = builder.Build();
 
