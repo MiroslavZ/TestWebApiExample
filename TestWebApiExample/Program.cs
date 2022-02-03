@@ -37,6 +37,14 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 
+// adding our validation filter for post and put requests
+builder.Services.AddScoped<ValidationFilterAttribute>();
+builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
+builder.Services.AddScoped<ValidateMediaTypeAttribute>();
+builder.Services.AddScoped<IEmployeeLinks, EmployeeLinks>();
+
+builder.Services.ConfigureVersioning();
+
 // enabling xml support
 builder.Services.AddControllers(config => {
     config.RespectBrowserAcceptHeader = true;
@@ -52,16 +60,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 
-// adding our validation filter for post and put requests
-builder.Services.AddScoped<ValidationFilterAttribute>();
-
-builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
-
 builder.Services.AddCustomMediaTypes();
-
-builder.Services.AddScoped<ValidateMediaTypeAttribute>();
-
-builder.Services.AddScoped<IEmployeeLinks, EmployeeLinks>();
 
 var app = builder.Build();
 
