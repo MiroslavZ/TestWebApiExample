@@ -1,7 +1,9 @@
-﻿using CompanyEmployees;
+﻿using AspNetCoreRateLimit;
+using CompanyEmployees;
 using CompanyEmployees.Presentation.Controllers;
 using Contracts;
 using LoggerService;
+using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Versioning;
@@ -68,7 +70,7 @@ namespace TestWebApiExample.Extensions
                 if (xmlOutputFormatter != null)
                 {
                     xmlOutputFormatter.SupportedMediaTypes
-                    .Add("application/vnd.codemaze.hateoas+xml"); 
+                    .Add("application/vnd.codemaze.hateoas+xml");
                     xmlOutputFormatter.SupportedMediaTypes
                     .Add("application/vnd.codemaze.apiroot+xml");
                 }
@@ -82,14 +84,50 @@ namespace TestWebApiExample.Extensions
                 opt.ReportApiVersions = true;
                 opt.AssumeDefaultVersionWhenUnspecified = true;
                 opt.DefaultApiVersion = new ApiVersion(1, 0);
-                opt.ApiVersionReader = new HeaderApiVersionReader("api-version"); 
+                opt.ApiVersionReader = new HeaderApiVersionReader("api-version");
                 //opt.ApiVersionReader = new QueryStringApiVersionReader("api-version"); 
-                
+
                 opt.Conventions.Controller<CompaniesController>()
                     .HasApiVersion(new ApiVersion(1, 0));
                 opt.Conventions.Controller<CompaniesV2Controller>()
                     .HasDeprecatedApiVersion(new ApiVersion(2, 0));
             });
+        }
+
+        public static void ConfigureResponseCaching(this IServiceCollection services) =>
+            services.AddResponseCaching();
+
+        public static void ConfigureHttpCacheHeaders(this IServiceCollection services) =>
+            services.AddHttpCacheHeaders(
+                (expirationOpt) =>
+                {
+                    expirationOpt.MaxAge = 65;
+                    expirationOpt.CacheLocation = CacheLocation.Private;
+                },
+                (validationOpt) =>
+                {
+                    validationOpt.MustRevalidate = true;
+                });
+
+        public static void ConfigureRateLimitingOptions(this IServiceCollection services)
+        {
+            var rateLimitRules = new List<RateLimitRule>
+            {
+                new RateLimitRule
+                {
+                    Endpoint = "*",
+                    Limit = 3,
+                    Period = "5m"
+                }
+            };
+            services.Configure<IpRateLimitOptions>(opt => 
+            {
+                opt.GeneralRules = rateLimitRules;
+            });
+            services.AddSingleton<IRateLimitCounterStore,MemoryCacheRateLimitCounterStore>();
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+            services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
         }
     }
 }
