@@ -52,6 +52,10 @@ builder.Services.AddMemoryCache();
 builder.Services.ConfigureRateLimitingOptions();
 builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddAuthentication();
+builder.Services.ConfigureIdentity();
+builder.Services.ConfigureJWT(builder.Configuration);
+
 // enabling xml support
 builder.Services.AddControllers(config => {
     config.RespectBrowserAcceptHeader = true;
@@ -61,12 +65,6 @@ builder.Services.AddControllers(config => {
 }).AddXmlDataContractSerializerFormatters()
     .AddCustomCSVFormatter()
     .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
-
-// custom responses from the actions
-builder.Services.Configure<ApiBehaviorOptions>(options =>
-{
-    options.SuppressModelStateInvalidFilter = true;
-});
 
 builder.Services.AddCustomMediaTypes();
 
@@ -102,6 +100,7 @@ app.UseCors("CorsPolicy");
 app.UseResponseCaching();
 app.UseHttpCacheHeaders();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers(); //adds endpoints //the routes are configured here (without app.UseRouting)
